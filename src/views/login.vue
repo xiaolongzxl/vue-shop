@@ -1,9 +1,11 @@
 <template>
 <div class="login">
   <div class="login-box">
-    <div class="avatar-box">
+    <!-- 头像 -->
+    <div class="avatar-box">  
       <img src="~@/assets/logo.png" alt="">
     </div>
+    <!-- form表单 -->
     <el-form ref="form" label-width="0px" class="login-form" :model="loginform" :rules="loginrules">
       <el-form-item prop="username">
         <el-input prefix-icon="el-icon-user-solid" v-model="loginform.username"></el-input>
@@ -25,6 +27,7 @@ export default {
   components: {},
   props: {},
   data() {
+    // 自定义密码验证规则
     var password = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入密码'));
