@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100%">
+  <div style="height: 100%">
     <el-aside :width="iscollapse ? '64px' : '200px'">
       <div class="check" @click="collapse">|||</div>
       <el-menu
@@ -46,7 +46,7 @@ export default {
   },
   data() {
     return {
-      activepath:'',
+      activepath: "",
       iscollapse: false,
       iconfont: {
         125: "iconfont icon-Shape",
@@ -57,18 +57,21 @@ export default {
       },
     };
   },
-  created(){
-    this.setactivepath('/users')
-    this.activepath = sessionStorage.getItem('activepath')
+  created() {
+    if (sessionStorage.getItem("activepath")) {
+      this.activepath = sessionStorage.getItem("activepath");
+    } else {
+      this.setactivepath("/users");
+    }
+    return (this.activepath = sessionStorage.getItem("activepath"));
   },
   methods: {
     collapse() {
       this.iscollapse = !this.iscollapse;
     },
-    setactivepath(activepath){
-      sessionStorage.setItem('activepath',activepath)
-      this.activepath = sessionStorage.getItem('activepath')
-    }
+    setactivepath(activepath) {
+      sessionStorage.setItem("activepath", activepath);
+    },
   },
 };
 </script>

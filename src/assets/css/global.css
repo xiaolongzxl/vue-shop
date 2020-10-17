@@ -11,3 +11,9 @@ html,body,#app{
   margin-top: 15px;
   font-size: 13px;
 }
+.el-cascader{
+  width: 100%;
+}
+.el-popper .el-cascader-panel{
+  max-height: 500px!important;
+}

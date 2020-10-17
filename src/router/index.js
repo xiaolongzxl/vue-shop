@@ -6,35 +6,40 @@ import Welcome from '@/views/welcome'
 import Users from '@/components/users/user'
 import Roles from '@/components/power/roles'
 import Rights from '@/components/power/rights'
+import GoodsCate from '@/components/goods/goodsCate'
 
 Vue.use(VueRouter)
 
 const routes = [
-  {path:'/',redirect:'/login'},
-  {path:'/login',component:Login},
+  { path: '/', redirect: '/login' },
+  { path: '/login', component: Login },
   {
-    path:'/home',
-    component:Home,
-    children:[
+    path: '/home',
+    component: Home,
+    children: [
       {
-        path:'/home',
-        redirect:'/welcome'
+        path: '/home',
+        redirect: '/welcome'
       },
       {
-        path:'/welcome',
-        component:Welcome
+        path: '/welcome',
+        component: Welcome
       },
       {
-        path:'/users',
-        component:Users
+        path: '/users',
+        component: Users
       },
       {
-        path:'/roles',
-        component:Roles
+        path: '/roles',
+        component: Roles
       },
       {
-        path:'/rights',
-        component:Rights
+        path: '/rights',
+        component: Rights
+      },
+      {
+        path: '/categories',
+        component: GoodsCate
       }
     ]
   }
@@ -43,10 +48,10 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-router.beforeEach((to,form,next)=>{
-  if(to.path == '/login') return next()
+router.beforeEach((to, form, next) => {
+  if (to.path == '/login') return next()
   var token = sessionStorage.getItem('token')
-  if(!token) return next('/login')
+  if (!token) return next('/login')
   next()
 })
 
