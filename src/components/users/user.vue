@@ -67,11 +67,13 @@
               effect="light"
               content="设置角色"
               placement="top"
+              :enterable="false"
             >
               <el-button
                 type="warning"
                 icon="el-icon-s-tools"
                 size="mini"
+                @click="setusers(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -120,12 +122,9 @@
         <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      :visible.sync="changedialog"
-      width="50%"
-      @close = "reseteditform"
-    >
-       <el-form
+    <!-- 添加删除弹框 -->
+    <el-dialog :visible.sync="changedialog" width="50%" @close="reseteditform">
+      <el-form
         ref="editform"
         :model="editform"
         label-width="80px"
@@ -143,9 +142,34 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="changedialog = false">取 消</el-button>
-        <el-button type="primary" @click="changedit"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="changedit">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 设置用户角色弹框 -->
+    <el-dialog
+      :visible.sync="isuserrole"
+      width="30%"
+      @close="resetuserrole"
+      title="分配角色"
+    >
+      <div>
+        <p>当前的用户:{{ momentuser }}</p>
+        <p>当前的角色:{{ momentrole }}</p>
+        <p>
+          分配新角色:
+          <el-select v-model="nowrole" placeholder="请选择">
+            <el-option
+              v-for="item in rolelist"
+              :key="item.id"
+              :value="item.id"
+              :label="item.roleName"
+            ></el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="changedialog = false">取 消</el-button>
+        <el-button type="primary" @click="changuserrole">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -192,6 +216,7 @@ export default {
         email: "",
         mobile: "",
       },
+
       // 添加用户校验规则
       addrules: {
         username: [
@@ -218,10 +243,22 @@ export default {
         ],
         mobile: [
           { required: true, message: "请填写电话", trigger: "blur" },
-          { validator: tel, trigger: "blur" }
-          ]
+          { validator: tel, trigger: "blur" },
+        ],
       },
-      editform:[]
+      editform: {},
+      // 分配角色弹框是否显示
+      isuserrole: false,
+      // 分配角色使用的用户名
+      momentuser: "",
+      // 分配角色使用的角色
+      momentrole: "",
+      // 设置角色是使用的id
+      momentid: 0,
+      // 选择角色下拉框绑定至
+      rolelist: [],
+      // 被选中的角色id
+      nowrole: "",
     };
   },
   // 页面创建成功调用请求
@@ -279,36 +316,71 @@ export default {
         this.getuserlist();
       });
     },
-    async changedia(id){
-      this.changedialog = true
-      const {data:res} = await this.$http.get("users/"+id)
-      if(res.meta.status != 200) return this.$message.error('获取数据失败')
-      this.editform = res.data
+    async changedia(id) {
+      this.changedialog = true;
+      const { data: res } = await this.$http.get("users/" + id);
+      if (res.meta.status != 200) return this.$message.error("获取数据失败");
+      this.editform = res.data;
     },
-    reseteditform(){
-      this.$refs.editform.resetFields()
+    reseteditform() {
+      this.$refs.editform.resetFields();
     },
-    async changedit(){
-      const {data:res} = await this.$http.put('users/'+this.editform.id,{email:this.editform.email,mobile:this.editform.mobile})
-      if(res.meta.status != 200) return this.$message.error('修改失败')
-      this.$message.success('更新用户信息成功')
-      this.changedialog = false
+    // 修改用户信息
+    async changedit() {
+      const { data: res } = await this.$http.put("users/" + this.editform.id, {
+        email: this.editform.email,
+        mobile: this.editform.mobile,
+      });
+      if (res.meta.status != 200) return this.$message.error("修改失败");
+      this.$message.success("更新用户信息成功");
+      this.changedialog = false;
     },
-    async deleteform(id){
-      const res = await this.$confirm('此操作不可逆，您真的要删除吗？', '确认删除', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).catch(res=>res)
-          if(res != 'confirm') return this.$message.info('取消删除成功')
-          const {data:r} = await this.$http.delete('users/'+id)
-          console.log(r)
-          if(r.meta.status != 200) return this.$message.error('删除用户失败')
-          this.$message.success('删除用户成功')
-          this.getuserlist()
-          
-    }
+    // 删除用户
+    async deleteform(id) {
+      const res = await this.$confirm(
+        "此操作不可逆，您真的要删除吗？",
+        "确认删除",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          center: true,
+        }
+      ).catch((res) => res);
+      if (res != "confirm") return this.$message.info("取消删除成功");
+      const { data: r } = await this.$http.delete("users/" + id);
+      if (r.meta.status != 200) return this.$message.error("删除用户失败");
+      this.$message.success("删除用户成功");
+      this.getuserlist();
+    },
+    // 设置用户角色
+    async setusers(user) {
+      this.isuserrole = true;
+      this.momentuser = user.username;
+      this.momentrole = user.role_name;
+      this.momentid = user.id;
+      const { data: res } = await this.$http.get("roles");
+      if (res.meta.status != 200)
+        return this.$message.error("获取角色列表失败");
+      this.rolelist = res.data;
+    },
+    // 关闭弹框已选择的值清空
+    resetuserrole() {
+      this.nowrole = "";
+    },
+    async changuserrole() {
+      const { data: res } = await this.$http.put(
+        `users/${this.momentid}/role`,
+        {
+          rid: this.nowrole,
+        }
+      );
+      // console.log(res);
+      if (res.meta.status != 200) return this.$message.error("设置角色失败");
+      this.$message.success("设置角色成功");
+      this.getuserlist();
+      this.isuserrole = false;
+    },
   },
 };
 </script>
