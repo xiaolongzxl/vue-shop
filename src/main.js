@@ -6,6 +6,22 @@ import axios from 'axios'
 import '@/assets/font/iconfont.css'
 import '@/assets/css/global.css'
 import TreeTable from 'tree-table-vue'
+import moment from 'moment'
+
+import VueQuillEditor from 'vue-quill-editor'
+
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+
+Vue.use(VueQuillEditor, /* { default global options } */)
+
+Vue.filter('dateformat', function (dataStr) {
+  var pattern = 'YYYY-MM-DD HH:mm:ss'
+  dataStr *= 1000
+  return moment(dataStr).format(pattern)
+
+})
 
 Vue.use(TreeTable)
 //设置接口根路径
