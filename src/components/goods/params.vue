@@ -26,7 +26,7 @@
               expandTrigger: 'hover',
               value: 'cat_id',
               label: 'cat_name',
-              childrem: 'children',
+              children: 'children',
             }"
             @change="handleChange"
             clearable
