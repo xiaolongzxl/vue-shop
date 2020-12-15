@@ -29,7 +29,8 @@ Vue.filter('dateformat', function (dataStr) {
 
 Vue.use(TreeTable)
 //设置接口根路径
-axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+// axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://www.ysqorz.top:8888/api/private/v1/'
 //axios挂载到vue上，以保证随时随地都可以用
 Vue.prototype.$http = axios
 // 给每次的请求添加拦截器，设置请求的属性
