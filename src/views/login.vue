@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item class="btns">
         <el-button type="primary" @click="login">登录</el-button>
-        <el-button type="info" @click="reset">重置</el-button>
+        <el-button type="info" @click="reset"></el-button>
       </el-form-item>
     </el-form>
   </div>
